@@ -21,6 +21,23 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class GoFile {
+
+	/** Absenderdaten stehen in absender.properties (nicht im Repository). */
+	private static java.util.Properties cfg;
+
+	private static String config(String key) {
+		if (cfg == null) {
+			cfg = new java.util.Properties();
+			File f = new File(System.getProperty("absender.datei", "absender.properties"));
+			try (java.io.InputStream in = new java.io.FileInputStream(f)) {
+				cfg.load(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
+			} catch (java.io.IOException e) {
+				throw new IllegalStateException("absender.properties fehlt: Vorlage absender.properties.example kopieren", e);
+			}
+		}
+		return cfg.getProperty(key, "");
+	}
+
 	
 	private File gofile;
 
@@ -102,19 +119,19 @@ public class GoFile {
 	public void writedatatofile(String[] data_tabel) throws TransformerException {
 		
 		
-		this.KDNR.setTextContent("34078");
+		this.KDNR.setTextContent(config("KDNR"));
 		this.sub_node.appendChild(this.KDNR);
-		this.UserName.setTextContent("felix@garnelio.de");
+		this.UserName.setTextContent(config("Username"));
 		this.sub_node.appendChild(this.UserName);
-		this.AbsFirma.setTextContent("NatureHolic GmbH");
+		this.AbsFirma.setTextContent(config("AbsFirma"));
 		this.sub_node.appendChild(this.AbsFirma);
-		this.AbsStrasse.setTextContent("Fürstenwalderweg 7");
+		this.AbsStrasse.setTextContent(config("AbsStrasse"));
 		this.sub_node.appendChild(this.AbsStrasse);
-		this.AbsLKZ.setTextContent("DE");
+		this.AbsLKZ.setTextContent(config("AbsLKZ"));
 		this.sub_node.appendChild(AbsLKZ);
-		this.AbsPLZ.setTextContent("68309");
+		this.AbsPLZ.setTextContent(config("AbsPLZ"));
 		this.sub_node.appendChild(this.AbsPLZ);
-		this.AbsOrt.setTextContent("Mannheim");
+		this.AbsOrt.setTextContent(config("AbsOrt"));
 		this.sub_node.appendChild(this.AbsOrt);
 		this.EmpfFirma.setTextContent(data_tabel[1]+" "+data_tabel[2]);
 		this.sub_node.appendChild(this.EmpfFirma);
